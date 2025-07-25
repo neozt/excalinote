@@ -1,9 +1,7 @@
-<h3 class="font-bold text-lg mt-0">
-  Your Notes
-</h3>
+<h3 class="font-bold text-lg mt-0">Your Notes</h3>
 
-<app-new-note-button (click)="createNote()"/>
+<app-new-note-button (click)="createNote()" />
 
 @for (note of notes(); track note.id) {
-  <app-note-title [value]="note.title" (valueChange)="debug($event)"/>
+  <app-note-title [value]="note.title" (valueChange)="debug($event)" />
 }
