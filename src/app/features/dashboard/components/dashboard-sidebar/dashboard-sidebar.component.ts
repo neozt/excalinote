@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { NoteTitle } from "../note-title/note-title";
+import { Component, signal, viewChildren } from '@angular/core';
+import { NoteTitleListItem } from "@features/dashboard/components/note-title-list-item/note-title-list-item.component";
 import { NewNoteButton } from "../new-note-button/new-note-button";
 import { Note } from "@shared/models/note.model";
 import { v7 as uuidv7 } from "uuid";
@@ -10,7 +10,7 @@ import { v7 as uuidv7 } from "uuid";
         class: 'w-[200px] bg-[#e4d3b2] p-5 shadow-[2px_0_10px_rgba(0,0,0,0.1)] overflow-y-auto flex flex-col'
     },
     imports: [
-        NoteTitle,
+        NoteTitleListItem,
         NewNoteButton
     ],
     templateUrl: './dashboard-sidebar.component.html',
@@ -19,6 +19,8 @@ import { v7 as uuidv7 } from "uuid";
 export class DashboardSidebar {
 
     notes = signal<Note[]>([])
+
+    noteTitleListItems = viewChildren(NoteTitleListItem)
 
     debug($event: string) {
         console.log("$event", $event);
@@ -31,5 +33,9 @@ export class DashboardSidebar {
             content: '',
         };
         this.notes.update(notes => [newNote, ...notes]);
+        setTimeout(() => {
+            // Immediately focus newly added note
+            this.noteTitleListItems()[0]?.startEditing();
+        });
     }
 }

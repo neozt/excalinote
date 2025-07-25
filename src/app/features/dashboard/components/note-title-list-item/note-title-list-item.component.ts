@@ -1,13 +1,16 @@
 import { Component, ElementRef, HostListener, input, linkedSignal, output, signal, viewChild } from '@angular/core';
+import { CommonModule } from "@angular/common";
 
 @Component({
     selector: 'app-note-title',
-    imports: [],
+    imports: [
+        CommonModule,
+    ],
     host: {},
-    templateUrl: './note-title.html',
-    styleUrl: './note-title.css'
+    templateUrl: './note-title-list-item.component.html',
+    styleUrl: './note-title-list-item.component.css'
 })
-export class NoteTitle {
+export class NoteTitleListItem {
 
     value = input.required<string>();
     valueChange = output<string>();

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DashboardSidebar } from '../../components/sidebar/dashboard-sidebar.component';
+import { DashboardSidebar } from '@features/dashboard/components/dashboard-sidebar/dashboard-sidebar.component';
 import { DashboardMain } from '@features/dashboard/components/dashboard-main/dashboard-main.component';
 
 @Component({
