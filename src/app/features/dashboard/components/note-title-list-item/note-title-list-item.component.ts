@@ -25,6 +25,11 @@ import { NoteStore } from "@features/dashboard/services/note.store";
 export class NoteTitleListItem {
   private noteStore = inject(NoteStore);
 
+  titleBox = viewChild<ElementRef>("titleBox");
+
+  note = input.required<Note>();
+  editing = signal(false);
+
   clicks = new Subject<void>();
   private bufferedClicks = this.clicks.pipe(bufferTime(250, undefined, 2));
   private singleClicks = this.bufferedClicks.pipe(
@@ -33,13 +38,6 @@ export class NoteTitleListItem {
   private doubleClicks = this.bufferedClicks.pipe(
     filter((buffered) => buffered.length > 1),
   );
-
-  note = input.required<Note>();
-
-  valueChange = output<string>();
-
-  editing = signal(false);
-  titleBox = viewChild<ElementRef>("titleBox");
 
   constructor() {
     this.singleClicks.pipe(takeUntilDestroyed()).subscribe(() => {
@@ -60,7 +58,14 @@ export class NoteTitleListItem {
 
   stopEditing(updatedTitle: string) {
     this.editing.set(false);
-    this.valueChange.emit(updatedTitle);
+    this.updateTitle(this.note(), updatedTitle);
+  }
+
+  private updateTitle(note: Note, updatedTitle: string) {
+    this.noteStore.updateNote({
+      ...note,
+      title: updatedTitle,
+    });
   }
 
   private selectTitle(el: HTMLElement) {
