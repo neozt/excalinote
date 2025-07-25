@@ -1,12 +1,11 @@
 <div
   #titleBox
-  (dblclick)="startEditing()"
-  (input)="_currentValue.set($any($event.target).textContent)"
-  (keydown.enter)="stopEditing()"
-  [attr.contenteditable]="_editing()"
-  [textContent]="value()"
   class="bg-[#f5e8d0] p-2 mb-2 rounded-md cursor-pointer"
   [ngClass]="{
-    'outline outline-2 outline-dashed outline-[#a67c52]': _editing(),
+    'outline-2 outline-dashed outline-[#a67c52]': editing(),
   }"
+  [attr.contenteditable]="editing()"
+  [innerText]="note().title"
+  (keydown.enter)="stopEditing(titleBox.innerText)"
+  (blur)="stopEditing(titleBox.innerText)"
 ></div>

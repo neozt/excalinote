@@ -3,5 +3,5 @@
 <app-new-note-button (click)="createNote()" />
 
 @for (note of notes(); track note.id) {
-  <app-note-title [value]="note.title" (valueChange)="updateTitle(note, $event)" />
+  <app-note-title [note]="note" (valueChange)="updateTitle(note, $event)" />
 }

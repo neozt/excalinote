@@ -3,7 +3,6 @@ import { NoteTitleListItem } from "@features/dashboard/components/note-title-lis
 import { NewNoteButton } from "../new-note-button/new-note-button";
 import { Note } from "@shared/models/note.model";
 import { NoteStore } from "@features/dashboard/services/note.store";
-import { JsonPipe } from "@angular/common";
 
 @Component({
   selector: "app-dashboard-sidebar",
@@ -23,7 +22,7 @@ export class DashboardSidebar {
   noteTitleListItems = viewChildren(NoteTitleListItem);
 
   createNote() {
-    const newNote = this.noteStore.emptyNote();
+    const newNote = this.noteStore.createEmptyNote();
     this.noteStore.addNote(newNote);
     setTimeout(() => {
       // Immediately focus newly added note

@@ -1,58 +1,66 @@
 import {
   Component,
   ElementRef,
-  HostListener,
+  inject,
   input,
-  linkedSignal,
   output,
   signal,
   viewChild,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { bufferTime, filter, Subject } from "rxjs";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Note } from "@shared/models/note.model";
+import { NoteStore } from "@features/dashboard/services/note.store";
 
 @Component({
   selector: "app-note-title",
   imports: [CommonModule],
-  host: {},
+  host: {
+    "(click)": "clicks.next()",
+  },
   templateUrl: "./note-title-list-item.component.html",
   styleUrl: "./note-title-list-item.component.css",
 })
 export class NoteTitleListItem {
-  value = input.required<string>();
+  private noteStore = inject(NoteStore);
+
+  clicks = new Subject<void>();
+  private bufferedClicks = this.clicks.pipe(bufferTime(250, undefined, 2));
+  private singleClicks = this.bufferedClicks.pipe(
+    filter((buffered) => buffered.length === 1),
+  );
+  private doubleClicks = this.bufferedClicks.pipe(
+    filter((buffered) => buffered.length > 1),
+  );
+
+  note = input.required<Note>();
+
   valueChange = output<string>();
 
-  _currentValue = linkedSignal(() => this.value());
+  editing = signal(false);
+  titleBox = viewChild<ElementRef>("titleBox");
 
-  _editing = signal(false);
+  constructor() {
+    this.singleClicks.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.noteStore.selectNote(this.note().id);
+    });
 
-  _titleBox = viewChild<ElementRef>("titleBox");
-
-  startEditing() {
-    console.log("start edit");
-    this._editing.set(true);
-    setTimeout(() => {
-      this.selectTitle(this._titleBox()?.nativeElement);
+    this.doubleClicks.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.startEditing();
     });
   }
 
-  stopEditing() {
-    console.log("stop edit");
-    this._editing.set(false);
-    this.valueChange.emit(this._currentValue());
+  startEditing() {
+    this.editing.set(true);
+    setTimeout(() => {
+      this.selectTitle(this.titleBox()?.nativeElement);
+    });
   }
 
-  @HostListener("document:click", ["$event"])
-  onOutsideClick(event: MouseEvent): void {
-    if (!this._editing()) {
-      return;
-    }
-
-    const clickedInside = this._titleBox()?.nativeElement?.contains(
-      event.target as Node,
-    );
-    if (!clickedInside) {
-      this.stopEditing();
-    }
+  stopEditing(updatedTitle: string) {
+    this.editing.set(false);
+    this.valueChange.emit(updatedTitle);
   }
 
   private selectTitle(el: HTMLElement) {

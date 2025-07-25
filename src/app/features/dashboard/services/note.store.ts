@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from "@angular/core";
+import { computed, effect, Injectable, signal } from "@angular/core";
 import { Note } from "@shared/models/note.model";
 import { v7 as uuidv7 } from "uuid";
 
@@ -6,24 +6,32 @@ import { v7 as uuidv7 } from "uuid";
   providedIn: "root",
 })
 export class NoteStore {
-  private _notes = signal<Note[]>([this.emptyNote()]);
+  private _notes = signal<Note[]>([this.createEmptyNote()]);
   notes = this._notes.asReadonly();
 
-  private _selectedNoteId = signal<string>(this.notes()[0].id);
+  private _selectedNoteId = signal<string>(this._notes()[0].id);
   selectedNote = computed(() => {
     return this.notes().find((note) => note.id === this._selectedNoteId())!;
   });
 
-  addNote(note: Note) {
-    this._notes.update((notes) => [note, ...notes]);
+  spyNotes = effect(() => console.log("notes updated", this._notes()));
+  spySelectedNoteId = effect(() =>
+    console.log("new note selected", this._selectedNoteId()),
+  );
+  spySelectedNote = effect(() =>
+    console.log("selected note updated", this.selectedNote()),
+  );
+
+  selectNote(noteId: string) {
+    if (!this._notes().some((note) => note.id === noteId)) {
+      console.error(`Cannot select note: ${noteId}. No such note exists.`);
+      return;
+    }
+    this._selectedNoteId.set(noteId);
   }
 
-  emptyNote(): Note {
-    return {
-      id: uuidv7(),
-      title: "Untitled Note",
-      content: "",
-    };
+  addNote(note: Note) {
+    this._notes.update((notes) => [note, ...notes]);
   }
 
   updateNote(updatedNote: Note) {
@@ -35,5 +43,13 @@ export class NoteStore {
         return note;
       });
     });
+  }
+
+  createEmptyNote(): Note {
+    return {
+      id: uuidv7(),
+      title: "Untitled Note",
+      content: "",
+    };
   }
 }
