@@ -17,23 +17,25 @@ import { NoteStore } from "@features/dashboard/services/note.store";
 export class DashboardSidebar {
   noteStore = inject(NoteStore);
 
-  notes = this.noteStore.notes;
+  private noteTitleListItems = viewChildren(NoteTitleListItem);
 
-  noteTitleListItems = viewChildren(NoteTitleListItem);
+  notes = this.noteStore.notes;
 
   createNote() {
     const newNote = this.noteStore.createEmptyNote();
     this.noteStore.addNote(newNote);
     setTimeout(() => {
-      // Immediately focus newly added note
-      this.noteTitleListItems()[0]?.startEditing();
+      this.focusNewTitleListItem(newNote);
+      this.noteStore.selectNote(newNote.id);
     });
   }
 
-  updateTitle(note: Note, updatedTitle: string) {
-    this.noteStore.updateNote({
-      ...note,
-      title: updatedTitle,
-    });
+  private focusNewTitleListItem(newNote: Note) {
+    const newListItem = this.noteTitleListItems()?.find(
+      (listItem) => listItem.note().id === newNote.id,
+    );
+    if (newListItem) {
+      newListItem.startEditing();
+    }
   }
 }

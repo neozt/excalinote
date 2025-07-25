@@ -24,9 +24,9 @@ import { NoteStore } from "@features/dashboard/services/note.store";
 export class NoteTitleListItem {
   private noteStore = inject(NoteStore);
 
-  titleBox = viewChild<ElementRef>("titleBox");
+  private titleBox = viewChild<ElementRef>("titleBox");
 
-  note = input.required<Note>();
+  public note = input.required<Note>();
   editing = signal(false);
 
   clicks = new Subject<void>();
@@ -51,14 +51,14 @@ export class NoteTitleListItem {
     });
   }
 
-  startEditing() {
+  public startEditing() {
     this.editing.set(true);
     setTimeout(() => {
       this.selectTitle(this.titleBox()?.nativeElement);
     });
   }
 
-  stopEditing(updatedTitle: string) {
+  public stopEditing(updatedTitle: string) {
     this.editing.set(false);
     this.updateTitle(this.note(), updatedTitle);
   }
