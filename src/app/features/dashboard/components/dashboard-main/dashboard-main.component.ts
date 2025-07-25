@@ -18,10 +18,10 @@ type NotebookMode = "read" | "write";
   styleUrl: "./dashboard-main.component.less",
 })
 export class DashboardMain {
-  content = linkedSignal(() => this.noteStore.selectedNote().content);
-  contentChange = output<string>();
-
   noteStore = inject(NoteStore);
+
+  selectedNote = this.noteStore.selectedNote;
+  content = linkedSignal(() => this.noteStore.selectedNote().content);
 
   readViewHeight = signal(0);
   readTotalHeight = signal(0);
@@ -47,8 +47,10 @@ export class DashboardMain {
   }
 
   onContentChange(content: string | null) {
-    console.log("content", content);
-    this.content.set(content ?? "");
+    this.noteStore.updateNote({
+      ...this.selectedNote(),
+      content: content ?? "",
+    });
   }
 
   previousPage() {

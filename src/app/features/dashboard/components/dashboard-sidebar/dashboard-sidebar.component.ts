@@ -1,9 +1,9 @@
-import { Component, inject, signal, viewChildren } from "@angular/core";
+import { Component, inject, viewChildren } from "@angular/core";
 import { NoteTitleListItem } from "@features/dashboard/components/note-title-list-item/note-title-list-item.component";
 import { NewNoteButton } from "../new-note-button/new-note-button";
 import { Note } from "@shared/models/note.model";
-import { v7 as uuidv7 } from "uuid";
 import { NoteStore } from "@features/dashboard/services/note.store";
+import { JsonPipe } from "@angular/common";
 
 @Component({
   selector: "app-dashboard-sidebar",
@@ -31,7 +31,10 @@ export class DashboardSidebar {
     });
   }
 
-  debug(event: any) {
-    console.log("event", event);
+  updateTitle(note: Note, updatedTitle: string) {
+    this.noteStore.updateNote({
+      ...note,
+      title: updatedTitle,
+    });
   }
 }
