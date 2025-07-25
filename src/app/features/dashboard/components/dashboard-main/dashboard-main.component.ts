@@ -1,21 +1,19 @@
 import {
   Component,
   computed,
-  ElementRef,
   inject,
-  input,
   linkedSignal,
   output,
   signal,
-  viewChild,
 } from "@angular/core";
 import { NoteStore } from "@features/dashboard/services/note.store";
+import { NgxResizeObserverDirective } from "ngx-resize-observer";
 
 type NotebookMode = "read" | "write";
 
 @Component({
   selector: "app-dashboard-main",
-  imports: [],
+  imports: [NgxResizeObserverDirective],
   templateUrl: "./dashboard-main.component.html",
   styleUrl: "./dashboard-main.component.less",
 })
@@ -25,42 +23,27 @@ export class DashboardMain {
 
   noteStore = inject(NoteStore);
 
-  readWrapper = viewChild<ElementRef>("readWrapper");
-  readPaper = viewChild<ElementRef>("readPaper");
+  readViewHeight = signal(0);
+  readTotalHeight = signal(0);
+  maxPage = computed(() => {
+    return Math.ceil(this.readTotalHeight() / this.readViewHeight());
+  });
+  currentPage = signal(1);
+  currentPageCapped = computed(() => {
+    if (this.currentPage() > this.maxPage()) {
+      return this.maxPage();
+    }
+    return this.currentPage();
+  });
+  readOffset = computed(() => {
+    return (this.currentPageCapped() - 1) * this.readViewHeight();
+  });
 
   mode = signal<NotebookMode>("write");
-  currentPage = signal(1);
-  maxPage = signal(1);
-  readOffset = computed(() => {
-    const clientHeight = this.readWrapper()?.nativeElement?.clientHeight ?? 1;
-    return (this.currentPage() - 1) * clientHeight;
-  });
 
   toggleMode() {
     const nextMode = this.mode() === "write" ? "read" : "write";
     this.mode.set(nextMode);
-
-    if (nextMode === "read") {
-      setTimeout(this.recalculatePagination());
-    }
-  }
-
-  private recalculatePagination() {
-    return () => {
-      const visibleHeight =
-        this.readWrapper()?.nativeElement?.clientHeight ?? 1;
-      const totalHeight = this.readPaper()?.nativeElement?.scrollHeight ?? 0;
-      const maxPage = Math.ceil(totalHeight / visibleHeight);
-      console.log({
-        visibleHeight,
-        totalHeight,
-        maxPage,
-      });
-      if (this.currentPage() > maxPage) {
-        this.currentPage.set(maxPage);
-      }
-      this.maxPage.set(maxPage);
-    };
   }
 
   onContentChange(content: string | null) {
@@ -69,22 +52,18 @@ export class DashboardMain {
   }
 
   previousPage() {
-    if (this.currentPage() === 1) {
-      return;
-    }
-
-    this.currentPage.update((current) => current - 1);
+    this.goToPage(this.currentPageCapped() - 1);
   }
 
   nextPage() {
-    if (this.currentPage() === this.maxPage()) {
+    this.goToPage(this.currentPageCapped() + 1);
+  }
+
+  goToPage(pageNumber: number) {
+    if (pageNumber <= 0 || pageNumber > this.maxPage()) {
       return;
     }
 
-    this.currentPage.update((current) => current + 1);
-  }
-
-  debug($event: UIEvent) {
-    console.log("$event", $event);
+    this.currentPage.set(pageNumber);
   }
 }

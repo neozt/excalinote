@@ -7,23 +7,44 @@
   @if (mode() === "write") {
     <div id="wrapper">
       <div
-              #writeNotebook
-              contenteditable="true"
-              data-placeholder="Start writing your thoughts..."
-              id="paper"
-              [innerText]="content()"
-              (blur)="onContentChange(writeNotebook.innerText)"
+        #writeNotebook
+        contenteditable="true"
+        data-placeholder="Start writing your thoughts..."
+        id="paper"
+        [innerText]="content()"
+        (blur)="onContentChange(writeNotebook.innerText)"
       ></div>
     </div>
   } @else {
-    <div #readWrapper id="readWrapper">
-      <div #readPaper id="readPaper" [innerText]="content()" [style.transform]="'translateY(-' + readOffset() + 'px)'">
-      </div>
+    <div
+      #readWrapper
+      id="readWrapper"
+      (onResize)="readViewHeight.set(readWrapper.clientHeight)"
+    >
+      <div
+        #readPaper
+        id="readPaper"
+        (onResize)="readTotalHeight.set(readPaper.scrollHeight)"
+        [innerText]="content()"
+        [style.transform]="'translateY(-' + readOffset() + 'px)'"
+      ></div>
     </div>
     <div class="button-container">
-      <button id="prevButton" [attr.disabled]="currentPage() === 1 ? 'true' : null" (click)="previousPage()"><-- Prev</button>
-      <button id="nextButton" [attr.disabled]="currentPage() === maxPage() ? 'true' : null" (click)="nextPage()">Next --></button>
+      <button
+        id="prevButton"
+        [attr.disabled]="currentPageCapped() === 1 ? 'true' : null"
+        (click)="previousPage()"
+      >
+        <-- Prev
+      </button>
+      <button
+        id="nextButton"
+        [attr.disabled]="currentPageCapped() === maxPage() ? 'true' : null"
+        (click)="nextPage()"
+      >
+        Next -->
+      </button>
     </div>
-    <div id="pageIndicator">Page {{ currentPage() }}/{{ maxPage() }}</div>
+    <div id="pageIndicator">Page {{ currentPageCapped() }}/{{ maxPage() }}</div>
   }
 </div>

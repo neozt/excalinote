@@ -5,15 +5,9 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@core/*": [
-        "app/core/*"
-      ],
-      "@features/*": [
-        "app/features/*"
-      ],
-      "@shared/*": [
-        "app/shared/*"
-      ]
+      "@core/*": ["app/core/*"],
+      "@features/*": ["app/features/*"],
+      "@shared/*": ["app/shared/*"]
     },
     "strict": true,
     "noImplicitOverride": true,
