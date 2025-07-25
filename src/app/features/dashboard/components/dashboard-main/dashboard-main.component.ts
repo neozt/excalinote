@@ -3,7 +3,6 @@ import {
   computed,
   inject,
   linkedSignal,
-  output,
   signal,
 } from "@angular/core";
 import { NoteStore } from "@features/dashboard/services/note.store";
@@ -67,5 +66,31 @@ export class DashboardMain {
     }
 
     this.currentPage.set(pageNumber);
+  }
+
+  handleTab($event: any) {
+    $event.preventDefault();
+    this.insertTabAt(window.getSelection());
+  }
+
+  private insertTabAt(selection: Selection | null) {
+    if (!selection || selection.rangeCount === 0) {
+      return;
+    }
+
+    // Delete highlighted text
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+
+    // Insert tab
+    const tabNode = document.createTextNode("\t");
+    range.insertNode(tabNode);
+
+    // Move the cursor after the inserted tab
+    range.setStartAfter(tabNode);
+    range.collapse(true);
+
+    selection.removeAllRanges();
+    selection.addRange(range);
   }
 }

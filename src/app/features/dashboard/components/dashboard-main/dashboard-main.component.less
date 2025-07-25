@@ -38,8 +38,8 @@
   overflow: hidden;
 }
 
-#paper,
-#readPaper {
+#writeNotebook,
+#readNotebook {
   min-height: 100%;
   line-height: 32px;
   vertical-align: bottom;
@@ -52,9 +52,10 @@
   color: #333;
   outline: none;
   background-attachment: local;
+  white-space: pre-wrap;
 }
 
-#paper:empty:before {
+#writeNotebook:empty:before {
   content: attr(data-placeholder);
   color: #aaa;
   pointer-events: none;

@@ -8,10 +8,11 @@
     <div id="wrapper">
       <div
         #writeNotebook
+        id="writeNotebook"
         contenteditable="true"
         data-placeholder="Start writing your thoughts..."
-        id="paper"
         [innerText]="content()"
+        (keydown.tab)="handleTab($event)"
         (blur)="onContentChange(writeNotebook.innerText)"
       ></div>
     </div>
@@ -22,9 +23,9 @@
       (onResize)="readViewHeight.set(readWrapper.clientHeight)"
     >
       <div
-        #readPaper
-        id="readPaper"
-        (onResize)="readTotalHeight.set(readPaper.scrollHeight)"
+        #readNotebook
+        id="readNotebook"
+        (onResize)="readTotalHeight.set(readNotebook.scrollHeight)"
         [innerText]="content()"
         [style.transform]="'translateY(-' + readOffset() + 'px)'"
       ></div>
