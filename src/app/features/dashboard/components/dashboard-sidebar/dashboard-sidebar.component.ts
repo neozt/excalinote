@@ -8,7 +8,7 @@ import { NoteStore } from "@features/dashboard/services/note.store";
   selector: "app-dashboard-sidebar",
   host: {
     class:
-      "w-[200px] bg-[#e4d3b2] p-5 shadow-[2px_0_10px_rgba(0,0,0,0.1)] overflow-y-auto flex flex-col",
+      "w-[250px] bg-[#e4d3b2] p-5 shadow-[2px_0_10px_rgba(0,0,0,0.1)] overflow-y-auto flex flex-col",
   },
   imports: [NoteTitleListItem, NewNoteButton],
   templateUrl: "./dashboard-sidebar.component.html",
