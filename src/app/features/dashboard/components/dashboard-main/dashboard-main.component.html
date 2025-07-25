@@ -1,20 +1,29 @@
 <div class="main">
   <div class="button-container">
-    <button id="toggleButton">Write Mode</button>
+    <button id="toggleButton" (click)="toggleMode()">
+      {{ mode() === "read" ? "Read Mode" : "Write Mode" }}
+    </button>
   </div>
-  <div id="wrapper">
-    <div
-      contenteditable="true"
-      data-placeholder="Start writing your thoughts..."
-      id="paper"
-    ></div>
-  </div>
-  <div id="readWrapper">
-    <div id="readPaper"></div>
-  </div>
-  <div class="button-container">
-    <button id="prevButton" style="display: none"><-- Prev</button>
-    <button id="nextButton" style="display: none">Next --></button>
-  </div>
-  <div id="pageIndicator">Page 1/1</div>
+  @if (mode() === "write") {
+    <div id="wrapper">
+      <div
+              #writeNotebook
+              contenteditable="true"
+              data-placeholder="Start writing your thoughts..."
+              id="paper"
+              [innerText]="content()"
+              (blur)="onContentChange(writeNotebook.innerText)"
+      ></div>
+    </div>
+  } @else {
+    <div #readWrapper id="readWrapper">
+      <div #readPaper id="readPaper" [innerText]="content()" [style.transform]="'translateY(-' + readOffset() + 'px)'">
+      </div>
+    </div>
+    <div class="button-container">
+      <button id="prevButton" [attr.disabled]="currentPage() === 1 ? 'true' : null" (click)="previousPage()"><-- Prev</button>
+      <button id="nextButton" [attr.disabled]="currentPage() === maxPage() ? 'true' : null" (click)="nextPage()">Next --></button>
+    </div>
+    <div id="pageIndicator">Page {{ currentPage() }}/{{ maxPage() }}</div>
+  }
 </div>
