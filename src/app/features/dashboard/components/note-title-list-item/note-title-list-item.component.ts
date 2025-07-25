@@ -7,8 +7,6 @@ import {
   viewChild,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { bufferTime, filter, Subject } from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Note } from "@shared/models/note.model";
 import { NoteStore } from "@features/dashboard/services/note.store";
 
@@ -16,7 +14,7 @@ import { NoteStore } from "@features/dashboard/services/note.store";
   selector: "app-note-title",
   imports: [CommonModule],
   host: {
-    "(click)": "clicks.next()",
+    "(click)": "handleClicks()",
   },
   templateUrl: "./note-title-list-item.component.html",
   styleUrl: "./note-title-list-item.component.css",
@@ -29,26 +27,31 @@ export class NoteTitleListItem {
   public note = input.required<Note>();
   editing = signal(false);
 
-  clicks = new Subject<void>();
-  private bufferedClicks = this.clicks.pipe(bufferTime(250, undefined, 2));
-  private singleClicks = this.bufferedClicks.pipe(
-    filter((buffered) => buffered.length === 1),
-  );
-  private doubleClicks = this.bufferedClicks.pipe(
-    filter((buffered) => buffered.length > 1),
-  );
+  private doubleClickTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  constructor() {
-    this.singleClicks.pipe(takeUntilDestroyed()).subscribe(() => {
-      if (this.editing()) {
-        return;
-      }
-      this.noteStore.selectNote(this.note().id);
-    });
+  handleClicks() {
+    if (this.editing()) {
+      return;
+    }
 
-    this.doubleClicks.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.startEditing();
-    });
+    if (this.doubleClickTimeout) {
+      clearTimeout(this.doubleClickTimeout);
+      this.doubleClickTimeout = null;
+      this.handleDoubleClick();
+    } else {
+      this.doubleClickTimeout = setTimeout(() => {
+        this.doubleClickTimeout = null;
+        this.handleSingleClick();
+      }, 250);
+    }
+  }
+
+  private handleSingleClick() {
+    this.noteStore.selectNote(this.note().id);
+  }
+
+  private handleDoubleClick() {
+    this.startEditing();
   }
 
   public startEditing() {
