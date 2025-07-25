@@ -5,7 +5,7 @@ import { Note } from "@shared/models/note.model";
 import { v7 as uuidv7 } from "uuid";
 
 @Component({
-    selector: 'app-sidebar',
+    selector: 'app-dashboard-sidebar',
     host: {
         class: 'w-[200px] bg-[#e4d3b2] p-5 shadow-[2px_0_10px_rgba(0,0,0,0.1)] overflow-y-auto flex flex-col'
     },
@@ -13,10 +13,10 @@ import { v7 as uuidv7 } from "uuid";
         NoteTitle,
         NewNoteButton
     ],
-    templateUrl: './sidebar.html',
-    styleUrl: './sidebar.less'
+    templateUrl: './dashboard-sidebar.component.html',
+    styleUrl: './dashboard-sidebar.component.less'
 })
-export class Sidebar {
+export class DashboardSidebar {
 
     notes = signal<Note[]>([])
 
