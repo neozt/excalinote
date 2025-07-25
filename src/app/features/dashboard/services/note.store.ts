@@ -1,4 +1,4 @@
-import { Injectable, signal } from "@angular/core";
+import { computed, Injectable, signal } from "@angular/core";
 import { Note } from "@shared/models/note.model";
 import { v7 as uuidv7 } from "uuid";
 
@@ -6,17 +6,34 @@ import { v7 as uuidv7 } from "uuid";
   providedIn: "root",
 })
 export class NoteStore {
-  private _notes = signal<Note[]>([createEmptyNote()]);
+  private _notes = signal<Note[]>([this.emptyNote()]);
   notes = this._notes.asReadonly();
 
-  private _selectedNote = signal<Note>(this._notes()[0]);
-  selectedNote = this._selectedNote.asReadonly();
-}
+  private _selectedNoteId = signal<string>(this.notes()[0].id);
+  selectedNote = computed(() => {
+    return this.notes().find((note) => note.id === this._selectedNoteId())!;
+  });
 
-function createEmptyNote(): Note {
-  return {
-    id: uuidv7(),
-    title: "Untitled Note",
-    content: "",
-  };
+  addNote(note: Note) {
+    this._notes.update((notes) => [note, ...notes]);
+  }
+
+  emptyNote(): Note {
+    return {
+      id: uuidv7(),
+      title: "Untitled Note",
+      content: "",
+    };
+  }
+
+  updateNote(updatedNote: Note) {
+    this._notes.update((notes) => {
+      return notes.map((note) => {
+        if (note.id === updatedNote.id) {
+          return updatedNote;
+        }
+        return note;
+      });
+    });
+  }
 }

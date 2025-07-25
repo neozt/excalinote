@@ -1,8 +1,9 @@
-import { Component, signal, viewChildren } from "@angular/core";
+import { Component, inject, signal, viewChildren } from "@angular/core";
 import { NoteTitleListItem } from "@features/dashboard/components/note-title-list-item/note-title-list-item.component";
 import { NewNoteButton } from "../new-note-button/new-note-button";
 import { Note } from "@shared/models/note.model";
 import { v7 as uuidv7 } from "uuid";
+import { NoteStore } from "@features/dashboard/services/note.store";
 
 @Component({
   selector: "app-dashboard-sidebar",
@@ -15,24 +16,22 @@ import { v7 as uuidv7 } from "uuid";
   styleUrl: "./dashboard-sidebar.component.less",
 })
 export class DashboardSidebar {
-  notes = signal<Note[]>([]);
+  noteStore = inject(NoteStore);
+
+  notes = this.noteStore.notes;
 
   noteTitleListItems = viewChildren(NoteTitleListItem);
 
-  debug($event: string) {
-    console.log("$event", $event);
-  }
-
   createNote() {
-    const newNote: Note = {
-      id: uuidv7(),
-      title: "Untitled Note",
-      content: "",
-    };
-    this.notes.update((notes) => [newNote, ...notes]);
+    const newNote = this.noteStore.emptyNote();
+    this.noteStore.addNote(newNote);
     setTimeout(() => {
       // Immediately focus newly added note
       this.noteTitleListItems()[0]?.startEditing();
     });
+  }
+
+  debug(event: any) {
+    console.log("event", event);
   }
 }

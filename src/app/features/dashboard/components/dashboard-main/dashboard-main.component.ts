@@ -19,7 +19,7 @@ type NotebookMode = "read" | "write";
 })
 export class DashboardMain {
   content = linkedSignal(() => this.noteStore.selectedNote().content);
-  contentChange = output<String>();
+  contentChange = output<string>();
 
   noteStore = inject(NoteStore);
 
