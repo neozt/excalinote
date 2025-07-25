@@ -3,7 +3,6 @@ import {
   ElementRef,
   inject,
   input,
-  output,
   signal,
   viewChild,
 } from "@angular/core";
@@ -41,6 +40,9 @@ export class NoteTitleListItem {
 
   constructor() {
     this.singleClicks.pipe(takeUntilDestroyed()).subscribe(() => {
+      if (this.editing()) {
+        return;
+      }
       this.noteStore.selectNote(this.note().id);
     });
 
