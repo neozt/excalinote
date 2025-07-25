@@ -1,5 +1,9 @@
-<h3 class="">Your Notes</h3>
-<button id="newNoteButton">+ New Note</button>
-<div class="note-item">Note 1</div>
-<div class="note-item">Note 2</div>
-<div class="note-item">Note 3</div>
+<h3 class="font-bold text-lg mt-0">
+  Your Notes
+</h3>
+
+<app-new-note-button (click)="createNote()"/>
+
+@for (note of notes(); track note.id) {
+  <app-note-title [value]="note.title" (valueChange)="debug($event)"/>
+}

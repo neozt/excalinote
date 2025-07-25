@@ -1,0 +1,4 @@
+<div #titleBox (dblclick)="startEditing()" (input)="_currentValue.set($any($event.target).textContent)"
+     (keydown.enter)="stopEditing()" [attr.contenteditable]="_editing()"
+     [textContent]="value()" class="bg-[#f5e8d0] p-2 mb-2 rounded-md cursor-pointer">
+</div>
