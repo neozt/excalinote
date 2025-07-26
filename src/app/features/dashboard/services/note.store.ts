@@ -71,7 +71,7 @@ export class NoteStore {
   }
 
   private initNoteStore() {
-    // Initial notes signals
+    // Initialise notes signals
     const savedNotesRaw = localStorage.getItem(this.STORAGE_KEYS.NOTES);
     const savedNotes = (
       savedNotesRaw ? JSON.parse(savedNotesRaw) : []
@@ -86,7 +86,7 @@ export class NoteStore {
     this._notes = signal(initialNotes);
     this.notes = this._notes.asReadonly();
 
-    // Initial selected note signals
+    // Initialise selected note signals
     const lastOpenedNote = localStorage.getItem(this.STORAGE_KEYS.LAST_OPENED);
     const isLastOpenValid = initialNotes.some(
       (note) => note.id === lastOpenedNote,

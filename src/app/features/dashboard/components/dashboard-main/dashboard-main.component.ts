@@ -1,27 +1,31 @@
 import {
   Component,
   computed,
+  HostListener,
   inject,
   linkedSignal,
+  OnInit,
   signal,
 } from "@angular/core";
 import { NoteStore } from "@features/dashboard/services/note.store";
 import { NgxResizeObserverDirective } from "ngx-resize-observer";
+import { NgStyle } from "@angular/common";
 
 type NotebookMode = "read" | "write";
 
 @Component({
   selector: "app-dashboard-main",
-  imports: [NgxResizeObserverDirective],
+  imports: [NgxResizeObserverDirective, NgStyle],
   templateUrl: "./dashboard-main.component.html",
   styleUrl: "./dashboard-main.component.less",
 })
-export class DashboardMain {
+export class DashboardMain implements OnInit {
   noteStore = inject(NoteStore);
 
   selectedNote = this.noteStore.selectedNote;
   content = linkedSignal(() => this.noteStore.selectedNote()?.content || "");
 
+  editorHeight = signal(0);
   readViewHeight = signal(0);
   readTotalHeight = signal(0);
   maxPage = computed(() => {
@@ -39,6 +43,18 @@ export class DashboardMain {
   });
 
   mode = signal<NotebookMode>("write");
+
+  readonly BORDER_WIDTH = 1;
+  readonly LINE_HEIGHT = 32;
+
+  ngOnInit() {
+    this.calculateEditorHeight();
+  }
+
+  @HostListener("window:resize", ["$event"])
+  onWindowResize($event: any) {
+    this.calculateEditorHeight();
+  }
 
   toggleMode() {
     const nextMode = this.mode() === "write" ? "read" : "write";
@@ -71,6 +87,13 @@ export class DashboardMain {
   handleTab($event: any) {
     $event.preventDefault();
     this.insertTabAt(window.getSelection());
+  }
+
+  private calculateEditorHeight() {
+    const windowHeight = window.innerHeight;
+    const maxLines = Math.floor((0.8 * windowHeight) / this.LINE_HEIGHT);
+    const editorHeight = maxLines * this.LINE_HEIGHT + this.BORDER_WIDTH * 2;
+    this.editorHeight.set(editorHeight);
   }
 
   private insertTabAt(selection: Selection | null) {

@@ -3,5 +3,5 @@
 <app-new-note-button (click)="createNote()" />
 
 @for (note of notes(); track note.id) {
-  <app-note-title [note]="note"/>
+  <app-note-title [note]="note" />
 }

@@ -5,19 +5,20 @@ Simple note-taking app with handwritten aesthetic inspired by Excalidraw.
 Access the website here - https://excalinote.neozt.dev/
 
 ## ✨ Features
+
 ✅ Create multiple notes with custom titles  
 ✅ Write Mode - write in vertical scrolling format for immersive writing sessions  
 ✅ Read Mode - read text in pages for the traditional notebook vibes  
 ✅ Save notes locally  
-🛠 ️Save notes to the cloud (WIP)  
+🛠 ️Save notes to the cloud (WIP)
 
 ## 📸 Screenshots
 
 Write Mode:
-![img_1.png](docs/write_mode.png)
+![Write Mode](docs/write_mode.png)
 
 Read Mode:
-![img_2.png](docs/read_mode.png)
+![Read Mode](docs/read_mode.png)
 
 ## 🛠️ Stack
 
@@ -35,6 +36,4 @@ Read Mode:
 ## Acknowledgements
 
 This project draws inspiration from [Excalidraw](https://excalidraw.com/).  
-[Excalifont](https://plus.excalidraw.com/excalifont) provided by Excalidraw under MIT License.  
-
-
+[Excalifont](https://plus.excalidraw.com/excalifont) provided by Excalidraw under MIT License.

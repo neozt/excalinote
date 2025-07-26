@@ -5,13 +5,22 @@
     </button>
   </div>
   @if (mode() === "write") {
-    <div id="wrapper">
+    <div
+      id="wrapper"
+      [ngStyle]="{
+        'border-width.px': BORDER_WIDTH,
+        'height.px': editorHeight(),
+      }"
+    >
       <div
         #writeNotebook
         id="writeNotebook"
         contenteditable="true"
         data-placeholder="Start writing your thoughts..."
         [innerText]="content()"
+        [ngStyle]="{
+          'line-height.px': LINE_HEIGHT,
+        }"
         (keydown.tab)="handleTab($event)"
         (blur)="onContentChange(writeNotebook.innerText)"
       ></div>
@@ -20,11 +29,18 @@
     <div
       #readWrapper
       id="readWrapper"
+      [ngStyle]="{
+        'border-width.px': BORDER_WIDTH,
+        'height.px': editorHeight(),
+      }"
       (onResize)="readViewHeight.set(readWrapper.clientHeight)"
     >
       <div
         #readNotebook
         id="readNotebook"
+        [ngStyle]="{
+          'line-height.px': LINE_HEIGHT,
+        }"
         (onResize)="readTotalHeight.set(readNotebook.scrollHeight)"
         [innerText]="content()"
         [style.transform]="'translateY(-' + readOffset() + 'px)'"
