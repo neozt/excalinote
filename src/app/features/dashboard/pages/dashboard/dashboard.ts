@@ -20,7 +20,7 @@ export class Dashboard implements OnDestroy {
     this.initialTitle = this.titleService.getTitle() || "Excalinote";
     effect(() => {
       this.titleService.setTitle(
-        this.noteStore.selectedNote().title || "Excalinote",
+        this.noteStore.selectedNote()?.title || "Excalinote",
       );
     });
   }

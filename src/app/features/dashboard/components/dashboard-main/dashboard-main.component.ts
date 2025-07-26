@@ -20,7 +20,7 @@ export class DashboardMain {
   noteStore = inject(NoteStore);
 
   selectedNote = this.noteStore.selectedNote;
-  content = linkedSignal(() => this.noteStore.selectedNote().content);
+  content = linkedSignal(() => this.noteStore.selectedNote()?.content || "");
 
   readViewHeight = signal(0);
   readTotalHeight = signal(0);
@@ -47,7 +47,7 @@ export class DashboardMain {
 
   onContentChange(content: string | null) {
     this.noteStore.updateNote({
-      ...this.selectedNote(),
+      ...this.selectedNote()!,
       content: content ?? "",
     });
   }
