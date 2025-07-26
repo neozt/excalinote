@@ -4,6 +4,7 @@
       {{ mode() === "read" ? "Read Mode" : "Write Mode" }}
     </button>
   </div>
+  <!-- TODO clean up HTML and CSS -->
   @if (mode() === "write") {
     <div
       id="wrapper"
@@ -13,17 +14,28 @@
       }"
     >
       <div
-        #writeNotebook
         id="writeNotebook"
-        contenteditable="true"
-        data-placeholder="Start writing your thoughts..."
-        [innerText]="content()"
         [ngStyle]="{
           'line-height.px': LINE_HEIGHT,
         }"
-        (keydown.tab)="handleTab($event)"
-        (blur)="onContentChange(writeNotebook.innerText)"
-      ></div>
+      >
+        <div
+          class="font-bold text-2xl text-center"
+          [style.margin-bottom.px]="LINE_HEIGHT"
+        >
+          {{ selectedNote()?.title }}
+        </div>
+
+        <div
+          #writeTextArea
+          class="outline-0"
+          contenteditable="true"
+          data-placeholder="Start writing your thoughts..."
+          [innerText]="content()"
+          (keydown.tab)="handleTab($event)"
+          (blur)="onContentChange(writeTextArea.innerText)"
+        ></div>
+      </div>
     </div>
   } @else {
     <div
@@ -42,9 +54,16 @@
           'line-height.px': LINE_HEIGHT,
         }"
         (onResize)="readTotalHeight.set(readNotebook.scrollHeight)"
-        [innerText]="content()"
         [style.transform]="'translateY(-' + readOffset() + 'px)'"
-      ></div>
+      >
+        <div
+          class="font-bold text-2xl text-center"
+          [style.margin-bottom.px]="LINE_HEIGHT"
+        >
+          {{ selectedNote()?.title }}
+        </div>
+        <div [innerText]="content()"></div>
+      </div>
     </div>
     <div class="button-container">
       <button
