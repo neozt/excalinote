@@ -1,6 +1,6 @@
 # Excalinote
 
-Simple note-taking app with handwritten aesthetic inspired by Excalidraw.
+Minimalistic note-taking app with handwritten aesthetic inspired by Excalidraw.
 
 Access the website here - https://excalinote.neozt.dev/
 
