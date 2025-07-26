@@ -3,16 +3,18 @@ import { Home } from "@features/home/home";
 import { Dashboard } from "@features/dashboard/pages/dashboard/dashboard";
 
 export const routes: Routes = [
-  {
-    path: "",
-    component: Home,
-  },
+  // TODO add home page
+  // {
+  //   path: "",
+  //   component: Home,
+  // },
   {
     path: "dashboard",
     component: Dashboard,
   },
+  // TODO redirect to home page
   {
     path: "**",
-    redirectTo: "",
+    redirectTo: "dashboard",
   },
 ];
