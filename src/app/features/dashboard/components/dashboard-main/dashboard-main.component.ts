@@ -10,17 +10,13 @@ import { NoteStore } from "@features/dashboard/services/note.store";
 import { NgxResizeObserverDirective } from "ngx-resize-observer";
 import { NgStyle } from "@angular/common";
 import { PageIndicator } from "@features/dashboard/components/page-indicator/page-indicator";
+import { filter, fromEvent } from "rxjs";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 type NotebookMode = "read" | "write";
 
 @Component({
   selector: "app-dashboard-main",
-  host: {
-    "(keydown.PageUp)": "previousPage()",
-    "(keydown.PageDown)": "nextPage()",
-    "(keydown.ArrowLeft)": "previousPage()",
-    "(keydown.ArrowRight)": "nextPage()",
-  },
   imports: [NgxResizeObserverDirective, NgStyle, PageIndicator],
   templateUrl: "./dashboard-main.component.html",
   styleUrl: "./dashboard-main.component.css",
@@ -51,6 +47,36 @@ export class DashboardMain implements OnInit {
 
   readonly BORDER_WIDTH = 1;
   readonly LINE_HEIGHT = 32;
+
+  constructor() {
+    this.initShortcutListeners();
+  }
+
+  private initShortcutListeners() {
+    const keyPress$ = fromEvent<KeyboardEvent>(window, "keydown").pipe(
+      filter(() => this.mode() === "read"),
+    );
+
+    keyPress$
+      .pipe(
+        filter((event) => event.key === "PageUp" || event.key === "ArrowLeft"),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => {
+        this.previousPage();
+      });
+
+    keyPress$
+      .pipe(
+        filter(
+          (event) => event.key === "PageDown" || event.key === "ArrowRight",
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => {
+        this.nextPage();
+      });
+  }
 
   ngOnInit() {
     this.calculateEditorHeight();
