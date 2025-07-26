@@ -3,6 +3,12 @@
   height: 100vh;
   width: 100%;
   display: flex;
+
+  /* Variables to be overridden inside from html template */
+  --editor-height: 0;
+  --border-width: 0;
+  --line-height: 0;
+  --read-offset: 0;
 }
 
 .main {
@@ -12,10 +18,14 @@
   align-items: center;
 }
 
-.paper {
+.editor-wrapper {
   width: 80%;
   max-width: 800px;
   height: var(--editor-height);
+}
+
+.paper {
+  height: 100%;
   background-color: #fdf6e3;
   border-width: var(--border-width);
   border-style: solid;

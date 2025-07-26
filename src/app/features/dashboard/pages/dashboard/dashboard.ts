@@ -8,7 +8,7 @@ import { NoteStore } from "@features/dashboard/services/note.store";
   selector: "app-dashboard",
   imports: [DashboardSidebar, DashboardMain],
   templateUrl: "./dashboard.html",
-  styleUrl: "./dashboard.less",
+  styleUrl: "./dashboard.css",
 })
 export class Dashboard implements OnDestroy {
   titleService = inject(Title);

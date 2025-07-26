@@ -3,7 +3,6 @@ import {
   computed,
   HostListener,
   inject,
-  linkedSignal,
   OnInit,
   signal,
 } from "@angular/core";
@@ -18,13 +17,14 @@ type NotebookMode = "read" | "write";
   selector: "app-dashboard-main",
   imports: [NgxResizeObserverDirective, NgStyle, PageIndicator],
   templateUrl: "./dashboard-main.component.html",
-  styleUrl: "./dashboard-main.component.less",
+  styleUrl: "./dashboard-main.component.css",
 })
 export class DashboardMain implements OnInit {
   noteStore = inject(NoteStore);
 
   selectedNote = this.noteStore.selectedNote;
-  content = linkedSignal(() => this.noteStore.selectedNote()?.content || "");
+
+  mode = signal<NotebookMode>("write");
 
   editorHeight = signal(0);
   readViewHeight = signal(0);
@@ -43,8 +43,6 @@ export class DashboardMain implements OnInit {
     return (this.currentPageCapped() - 1) * this.readViewHeight();
   });
 
-  mode = signal<NotebookMode>("write");
-
   readonly BORDER_WIDTH = 1;
   readonly LINE_HEIGHT = 32;
 
@@ -52,8 +50,8 @@ export class DashboardMain implements OnInit {
     this.calculateEditorHeight();
   }
 
-  @HostListener("window:resize", ["$event"])
-  onWindowResize($event: any) {
+  @HostListener("window:resize")
+  onWindowResize() {
     this.calculateEditorHeight();
   }
 
@@ -90,13 +88,6 @@ export class DashboardMain implements OnInit {
     this.insertTabAt(window.getSelection());
   }
 
-  private calculateEditorHeight() {
-    const windowHeight = window.innerHeight;
-    const maxLines = Math.floor((0.8 * windowHeight) / this.LINE_HEIGHT);
-    const editorHeight = maxLines * this.LINE_HEIGHT + this.BORDER_WIDTH * 2;
-    this.editorHeight.set(editorHeight);
-  }
-
   private insertTabAt(selection: Selection | null) {
     if (!selection || selection.rangeCount === 0) {
       return;
@@ -116,5 +107,12 @@ export class DashboardMain implements OnInit {
 
     selection.removeAllRanges();
     selection.addRange(range);
+  }
+
+  private calculateEditorHeight() {
+    const windowHeight = window.innerHeight;
+    const maxLines = Math.floor((0.8 * windowHeight) / this.LINE_HEIGHT);
+    const editorHeight = maxLines * this.LINE_HEIGHT + this.BORDER_WIDTH * 2;
+    this.editorHeight.set(editorHeight);
   }
 }

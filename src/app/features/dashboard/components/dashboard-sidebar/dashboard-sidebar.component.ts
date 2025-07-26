@@ -12,7 +12,7 @@ import { NoteStore } from "@features/dashboard/services/note.store";
   },
   imports: [NoteTitleListItem, NewNoteButton],
   templateUrl: "./dashboard-sidebar.component.html",
-  styleUrl: "./dashboard-sidebar.component.less",
+  styleUrl: "./dashboard-sidebar.component.css",
 })
 export class DashboardSidebar {
   noteStore = inject(NoteStore);
