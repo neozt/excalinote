@@ -15,6 +15,12 @@ type NotebookMode = "read" | "write";
 
 @Component({
   selector: "app-dashboard-main",
+  host: {
+    "(keydown.PageUp)": "previousPage()",
+    "(keydown.PageDown)": "nextPage()",
+    "(keydown.ArrowLeft)": "previousPage()",
+    "(keydown.ArrowRight)": "nextPage()",
+  },
   imports: [NgxResizeObserverDirective, NgStyle, PageIndicator],
   templateUrl: "./dashboard-main.component.html",
   styleUrl: "./dashboard-main.component.css",
@@ -76,6 +82,10 @@ export class DashboardMain implements OnInit {
   }
 
   goToPage(pageNumber: number) {
+    if (this.mode() !== "read") {
+      return;
+    }
+
     if (pageNumber <= 0 || pageNumber > this.maxPage()) {
       return;
     }
