@@ -10,12 +10,13 @@ import {
 import { NoteStore } from "@features/dashboard/services/note.store";
 import { NgxResizeObserverDirective } from "ngx-resize-observer";
 import { NgStyle } from "@angular/common";
+import { PageIndicator } from "@features/dashboard/components/page-indicator/page-indicator";
 
 type NotebookMode = "read" | "write";
 
 @Component({
   selector: "app-dashboard-main",
-  imports: [NgxResizeObserverDirective, NgStyle],
+  imports: [NgxResizeObserverDirective, NgStyle, PageIndicator],
   templateUrl: "./dashboard-main.component.html",
   styleUrl: "./dashboard-main.component.less",
 })

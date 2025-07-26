@@ -1,71 +1,62 @@
-<div class="main">
-  <div class="button-container">
+<div
+  class="main"
+  [ngStyle]="{
+    '--line-height': LINE_HEIGHT + 'px',
+    '--border-width': BORDER_WIDTH + 'px',
+    '--editor-height': editorHeight() + 'px',
+  }"
+>
+  <div class="button-container mt-2 mb-4">
     <button id="toggleButton" (click)="toggleMode()">
       {{ mode() === "read" ? "Read Mode" : "Write Mode" }}
     </button>
   </div>
-  <!-- TODO clean up HTML and CSS -->
+
   @if (mode() === "write") {
-    <div
-      id="wrapper"
-      [ngStyle]="{
-        'border-width.px': BORDER_WIDTH,
-        'height.px': editorHeight(),
-      }"
-    >
-      <div
-        id="writeNotebook"
-        [ngStyle]="{
-          'line-height.px': LINE_HEIGHT,
-        }"
-      >
+    <div class="paper write-editor">
+      <div class="writer-wrapper">
         <div
           class="font-bold text-2xl text-center"
           [style.margin-bottom.px]="LINE_HEIGHT"
         >
-          {{ selectedNote()?.title }}
+          {{ selectedNote().title }}
         </div>
 
         <div
-          #writeTextArea
-          class="outline-0"
+          #writer
+          class="writer"
           contenteditable="true"
           data-placeholder="Start writing your thoughts..."
           [innerText]="content()"
           (keydown.tab)="handleTab($event)"
-          (blur)="onContentChange(writeTextArea.innerText)"
+          (blur)="onContentChange(writer.innerText)"
         ></div>
       </div>
     </div>
   } @else {
     <div
-      #readWrapper
-      id="readWrapper"
-      [ngStyle]="{
-        'border-width.px': BORDER_WIDTH,
-        'height.px': editorHeight(),
-      }"
-      (onResize)="readViewHeight.set(readWrapper.clientHeight)"
+      #readEditor
+      class="paper read-editor"
+      (onResize)="readViewHeight.set(readEditor.clientHeight)"
     >
       <div
-        #readNotebook
-        id="readNotebook"
-        [ngStyle]="{
-          'line-height.px': LINE_HEIGHT,
-        }"
-        (onResize)="readTotalHeight.set(readNotebook.scrollHeight)"
-        [style.transform]="'translateY(-' + readOffset() + 'px)'"
+        #readWrapper
+        class="reader-wrapper"
+        [ngStyle]="{ '--read-offset': '-' + readOffset() + 'px' }"
+        (onResize)="readTotalHeight.set(readWrapper.scrollHeight)"
       >
         <div
           class="font-bold text-2xl text-center"
           [style.margin-bottom.px]="LINE_HEIGHT"
         >
-          {{ selectedNote()?.title }}
+          {{ selectedNote().title }}
         </div>
-        <div [innerText]="content()"></div>
+
+        <div class="reader" [innerText]="content()"></div>
       </div>
     </div>
-    <div class="button-container">
+
+    <div class="button-container mt-4">
       <button
         id="prevButton"
         [attr.disabled]="currentPageCapped() === 1 ? 'true' : null"
@@ -81,6 +72,11 @@
         Next -->
       </button>
     </div>
-    <div id="pageIndicator">Page {{ currentPageCapped() }}/{{ maxPage() }}</div>
+
+    <app-page-indicator
+      class="block mt-2"
+      [currentPage]="currentPageCapped()"
+      [maxPage]="maxPage()"
+    />
   }
 </div>
