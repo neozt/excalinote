@@ -2,14 +2,13 @@ import { Injectable, DestroyRef, inject } from "@angular/core";
 import { DOCUMENT } from "@angular/common";
 import { fromEvent } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-
-type ShortcutHandler = (event: KeyboardEvent) => void;
-
-type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
+import { AtLeast } from "@shared/utils/types.util";
 
 export type ShortcutId = string;
 
-export type ShortcutKey = {
+type ShortcutHandler = (event: KeyboardEvent) => void;
+
+type ShortcutKey = {
   key: string;
   ctrl: boolean;
   shift: boolean;
@@ -17,21 +16,8 @@ export type ShortcutKey = {
   meta: boolean;
 };
 
-export type PartialShortcutKey = AtLeast<ShortcutKey, "key">;
+type PartialShortcutKey = AtLeast<ShortcutKey, "key">;
 
-function normalizeShortcutKey(key: string | PartialShortcutKey): ShortcutKey {
-  if (typeof key === "string") {
-    return { key: key, ctrl: false, shift: false, alt: false, meta: false };
-  } else {
-    return {
-      key: key.key,
-      ctrl: !!key.ctrl,
-      shift: !!key.shift,
-      alt: !!key.alt,
-      meta: !!key.meta,
-    };
-  }
-}
 
 @Injectable({
   providedIn: "root",
@@ -72,7 +58,7 @@ export class ShortcutService {
     action: ShortcutHandler,
   ): ShortcutId {
     const id = this.generateShortcutId();
-    const normalizedKeys = keys.map(normalizeShortcutKey);
+    const normalizedKeys = keys.map((key) => this.normalizeShortcutKey(key));
     this.handlers.set(id, { keys: normalizedKeys, action });
 
     // Add to key index
@@ -111,6 +97,20 @@ export class ShortcutService {
 
   private generateShortcutId(): ShortcutId {
     return crypto.randomUUID();
+  }
+
+  private normalizeShortcutKey(key: string | PartialShortcutKey): ShortcutKey {
+    if (typeof key === "string") {
+      return {key: key, ctrl: false, shift: false, alt: false, meta: false};
+    } else {
+      return {
+        key: key.key,
+        ctrl: !!key.ctrl,
+        shift: !!key.shift,
+        alt: !!key.alt,
+        meta: !!key.meta,
+      };
+    }
   }
 
   private getComboKey(shortcut: ShortcutKey): string {
