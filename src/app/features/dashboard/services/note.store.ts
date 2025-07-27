@@ -63,6 +63,29 @@ export class NoteStore {
     });
   }
 
+  createWelcomeNote(): Note {
+    return {
+      id: uuidv7(),
+      title: "Welcome to Excalinote",
+      content:
+        "👋 Welcome to Excalinote!\n" +
+        "\n" +
+        "Excalinote is minimalistic note‑taking app with a handwritten aesthetic. To get started, simply create a new note, enter a title, and write away!\n" +
+        "\n" +
+        "Features of Excalinote include:\n" +
+        "- Toggle between write mode and read mode depending on whether you're looking for an immersive writing session, or a comfy reading time.\n" +
+        "- Auto-save notes to local device.\n" +
+        "\n" +
+        "Handy shortcuts:\n" +
+        "➡️ Next page: RightArrow or PageDown\n" +
+        "⬅️ Previous page: LeftArrow or PageUp\n" +
+        "💾 Save: Ctrl + S\n" +
+        "\n" +
+        "Visit the project page on Github to learn more:\n" +
+        "https://github.com/neozt/excalinote",
+    };
+  }
+
   createEmptyNote(): Note {
     return {
       id: uuidv7(),
@@ -78,7 +101,9 @@ export class NoteStore {
       savedNotesRaw ? JSON.parse(savedNotesRaw) : []
     ) as Note[];
     const haveSavedNotes = savedNotes.length > 0;
-    const initialNotes = haveSavedNotes ? savedNotes : [this.createEmptyNote()];
+    const initialNotes = haveSavedNotes
+      ? savedNotes
+      : [this.createWelcomeNote()];
     if (haveSavedNotes) {
       console.debug("[Local sync] Restoring saved notes", savedNotes);
     } else {
