@@ -9,8 +9,15 @@ Access the website here - https://excalinote.neozt.dev/
 ✅ Create multiple notes with custom titles  
 ✅ Write Mode - write in vertical scrolling format for immersive writing sessions  
 ✅ Read Mode - read text in pages for the traditional notebook vibes  
+✅ Keyboard shortcuts for easy navigation  
 ✅ Save notes locally  
 🛠 ️Save notes to the cloud (WIP)
+
+## Keyboard shortcuts
+
+- Next page - `RightArrow` or `PageDown`
+- Previous page - `LeftArrow` or `PageUp`
+- Save - `Ctrl + S`
 
 ## 📸 Screenshots
 
