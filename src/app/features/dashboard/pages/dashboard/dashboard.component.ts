@@ -7,10 +7,10 @@ import { NoteStore } from "@features/dashboard/services/note.store";
 @Component({
   selector: "app-dashboard",
   imports: [DashboardSidebar, DashboardMain],
-  templateUrl: "./dashboard.html",
-  styleUrl: "./dashboard.css",
+  templateUrl: "./dashboard.component.html",
+  styleUrl: "./dashboard.component.css",
 })
-export class Dashboard implements OnDestroy {
+export class DashboardComponent implements OnDestroy {
   titleService = inject(Title);
   noteStore = inject(NoteStore);
 

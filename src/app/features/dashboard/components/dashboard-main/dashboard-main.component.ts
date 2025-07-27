@@ -14,14 +14,14 @@ import {
 import { NoteStore } from "@features/dashboard/services/note.store";
 import { NgxResizeObserverDirective } from "ngx-resize-observer";
 import { NgStyle } from "@angular/common";
-import { PageIndicator } from "@features/dashboard/components/page-indicator/page-indicator";
-import { ShortcutId, ShortcutService } from "@core/shortcut.service";
+import { PageIndicatorComponent } from "@features/dashboard/components/page-indicator/page-indicator.component";
+import { ShortcutId, ShortcutService } from "@core/services/shortcut.service";
 
 type NotebookMode = "read" | "write";
 
 @Component({
   selector: "app-dashboard-main",
-  imports: [NgxResizeObserverDirective, NgStyle, PageIndicator],
+  imports: [NgxResizeObserverDirective, NgStyle, PageIndicatorComponent],
   templateUrl: "./dashboard-main.component.html",
   styleUrl: "./dashboard-main.component.css",
 })
