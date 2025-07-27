@@ -84,6 +84,9 @@ export class DashboardMain implements OnInit, OnDestroy {
 
   toggleMode() {
     const nextMode = this.mode() === "write" ? "read" : "write";
+    // hacky fix, otherwise when switching from write to read back to write mode,
+    // the new write editor won't have latest changes
+    this.content.set(this.selectedNote().content);
     this.mode.set(nextMode);
   }
 
