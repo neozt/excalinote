@@ -3,6 +3,7 @@ import {
   computed,
   HostListener,
   inject,
+  OnDestroy,
   OnInit,
   signal,
 } from "@angular/core";
@@ -10,18 +11,17 @@ import { NoteStore } from "@features/dashboard/services/note.store";
 import { NgxResizeObserverDirective } from "ngx-resize-observer";
 import { NgStyle } from "@angular/common";
 import { PageIndicator } from "@features/dashboard/components/page-indicator/page-indicator";
-import { ShortcutService } from "@core/shortcut.service";
+import { ShortcutId, ShortcutService } from "@core/shortcut.service";
 
 type NotebookMode = "read" | "write";
 
 @Component({
   selector: "app-dashboard-main",
   imports: [NgxResizeObserverDirective, NgStyle, PageIndicator],
-  providers: [ShortcutService],
   templateUrl: "./dashboard-main.component.html",
   styleUrl: "./dashboard-main.component.css",
 })
-export class DashboardMain implements OnInit {
+export class DashboardMain implements OnInit, OnDestroy {
   noteStore = inject(NoteStore);
   shortcutService = inject(ShortcutService);
 
@@ -46,27 +46,22 @@ export class DashboardMain implements OnInit {
     return (this.currentPageCapped() - 1) * this.readViewHeight();
   });
 
+  private shortcutSubscriptions: ShortcutId[] = [];
+
   readonly BORDER_WIDTH = 1;
   readonly LINE_HEIGHT = 32;
 
-  constructor() {
-    this.initShortcutListeners();
-  }
-
-  private initShortcutListeners() {
-    this.shortcutService.registerShortcut({
-      keys: ["PageUp", "ArrowLeft"],
-      action: () => this.previousPage(),
-    });
-
-    this.shortcutService.registerShortcut({
-      keys: ["PageDown", "ArrowRight"],
-      action: () => this.nextPage(),
-    });
-  }
+  constructor() {}
 
   ngOnInit() {
+    this.initShortcutListeners();
     this.calculateEditorHeight();
+  }
+
+  ngOnDestroy() {
+    this.shortcutSubscriptions.forEach((subscription) =>
+      this.shortcutService.unregister(subscription),
+    );
   }
 
   @HostListener("window:resize")
@@ -130,6 +125,17 @@ export class DashboardMain implements OnInit {
 
     selection.removeAllRanges();
     selection.addRange(range);
+  }
+
+  private initShortcutListeners() {
+    this.shortcutSubscriptions.push(
+      this.shortcutService.register(["PageUp", "ArrowLeft"], () =>
+        this.previousPage(),
+      ),
+      this.shortcutService.register(["PageDown", "ArrowRight"], () =>
+        this.nextPage(),
+      ),
+    );
   }
 
   private calculateEditorHeight() {
