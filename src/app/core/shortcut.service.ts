@@ -5,7 +5,33 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 type ShortcutHandler = (event: KeyboardEvent) => void;
 
+type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
+
 export type ShortcutId = string;
+
+export type ShortcutKey = {
+  key: string;
+  ctrl: boolean;
+  shift: boolean;
+  alt: boolean;
+  meta: boolean;
+};
+
+export type PartialShortcutKey = AtLeast<ShortcutKey, "key">;
+
+function normalizeShortcutKey(key: string | PartialShortcutKey): ShortcutKey {
+  if (typeof key === "string") {
+    return { key: key, ctrl: false, shift: false, alt: false, meta: false };
+  } else {
+    return {
+      key: key.key,
+      ctrl: !!key.ctrl,
+      shift: !!key.shift,
+      alt: !!key.alt,
+      meta: !!key.meta,
+    };
+  }
+}
 
 @Injectable({
   providedIn: "root",
@@ -17,7 +43,7 @@ export class ShortcutService {
   // Stores full handler details
   private handlers = new Map<
     ShortcutId,
-    { keys: string[]; action: ShortcutHandler }
+    { keys: ShortcutKey[]; action: ShortcutHandler }
   >();
 
   // Secondary index: key -> ShortcutId[]
@@ -27,29 +53,34 @@ export class ShortcutService {
     fromEvent<KeyboardEvent>(this.document, "keydown")
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
-        const key = event.key;
-        const ids = this.keyIndex.get(key);
+        const comboKey = this.getComboKeyFromEvent(event);
+        const ids = this.keyIndex.get(comboKey);
         if (!ids || ids.length === 0) {
           return;
         }
 
         const lastId = ids[ids.length - 1];
         const handlerEntry = this.handlers.get(lastId);
-        if (handlerEntry && handlerEntry.keys.includes(event.key)) {
+        if (handlerEntry) {
           handlerEntry.action(event);
         }
       });
   }
 
-  register(keys: string[], action: ShortcutHandler): ShortcutId {
+  register(
+    keys: Array<string | PartialShortcutKey>,
+    action: ShortcutHandler,
+  ): ShortcutId {
     const id = this.generateShortcutId();
-    this.handlers.set(id, { keys, action });
+    const normalizedKeys = keys.map(normalizeShortcutKey);
+    this.handlers.set(id, { keys: normalizedKeys, action });
 
     // Add to key index
-    for (const key of keys) {
-      const list = this.keyIndex.get(key) ?? [];
+    for (const key of normalizedKeys) {
+      const comboKey = this.getComboKey(key);
+      const list = this.keyIndex.get(comboKey) ?? [];
       list.push(id);
-      this.keyIndex.set(key, list);
+      this.keyIndex.set(comboKey, list);
     }
 
     return id;
@@ -63,13 +94,14 @@ export class ShortcutService {
 
     // Remove from key index
     for (const key of entry.keys) {
-      const shortcutIds = this.keyIndex.get(key);
+      const comboKey = this.getComboKey(key);
+      const shortcutIds = this.keyIndex.get(comboKey);
       if (shortcutIds) {
         const removed = shortcutIds.filter((existingId) => existingId !== id);
         if (removed.length === 0) {
-          this.keyIndex.delete(key);
+          this.keyIndex.delete(comboKey);
         } else {
-          this.keyIndex.set(key, removed);
+          this.keyIndex.set(comboKey, removed);
         }
       }
     }
@@ -79,5 +111,25 @@ export class ShortcutService {
 
   private generateShortcutId(): ShortcutId {
     return crypto.randomUUID();
+  }
+
+  private getComboKey(shortcut: ShortcutKey): string {
+    const parts = [];
+    if (shortcut.ctrl) parts.push("ctrl");
+    if (shortcut.alt) parts.push("alt");
+    if (shortcut.shift) parts.push("shift");
+    if (shortcut.meta) parts.push("meta");
+    parts.push(shortcut.key.toLowerCase());
+    return parts.join("-");
+  }
+
+  private getComboKeyFromEvent(event: KeyboardEvent): string {
+    const parts = [];
+    if (event.ctrlKey) parts.push("ctrl");
+    if (event.altKey) parts.push("alt");
+    if (event.shiftKey) parts.push("shift");
+    if (event.metaKey) parts.push("meta");
+    parts.push(event.key.toLowerCase());
+    return parts.join("-");
   }
 }
