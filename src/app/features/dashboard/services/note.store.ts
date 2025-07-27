@@ -21,6 +21,7 @@ export class NoteStore {
   notes!: Signal<Note[]>;
 
   private _selectedNoteId!: WritableSignal<string>;
+  selectedNoteId!: Signal<string>;
   selectedNote!: Signal<Note>;
 
   private localSyncEvent = new Subject<SyncEvent>();
@@ -96,6 +97,7 @@ export class NoteStore {
       console.debug("[Local sync] Restoring last opened note:", lastOpenedNote);
     }
     this._selectedNoteId = signal(initialNote);
+    this.selectedNoteId = this._selectedNoteId.asReadonly();
     this.selectedNote = computed(() => {
       return this.notes().find((note) => note.id === this._selectedNoteId())!;
     });

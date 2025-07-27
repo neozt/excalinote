@@ -28,9 +28,9 @@
             class="writer"
             contenteditable="true"
             data-placeholder="Start writing your thoughts..."
-            [innerText]="selectedNote().content"
+            [innerText]="content()"
             (keydown.tab)="handleTab($event)"
-            (blur)="onContentChange(writer.innerText)"
+            (blur)="saveContent(writer.innerText)"
           ></div>
         </div>
       </div>

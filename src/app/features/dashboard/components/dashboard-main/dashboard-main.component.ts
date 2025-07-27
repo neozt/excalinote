@@ -1,11 +1,15 @@
 import {
   Component,
   computed,
+  ElementRef,
   HostListener,
   inject,
+  linkedSignal,
   OnDestroy,
   OnInit,
   signal,
+  untracked,
+  viewChild,
 } from "@angular/core";
 import { NoteStore } from "@features/dashboard/services/note.store";
 import { NgxResizeObserverDirective } from "ngx-resize-observer";
@@ -25,7 +29,16 @@ export class DashboardMain implements OnInit, OnDestroy {
   noteStore = inject(NoteStore);
   shortcutService = inject(ShortcutService);
 
+  writerRef = viewChild<ElementRef<HTMLDivElement>>("writer");
+
   selectedNote = this.noteStore.selectedNote;
+  selectedNoteId = this.noteStore.selectedNoteId;
+  content = linkedSignal(() => {
+    // Separate out DOM state from store state to prevent DOM element being re-rendered from its own changes.
+    // This is so that ctrl+s doesn't cause us to lose focus from the editor
+    const dependencies = [this.selectedNoteId()];
+    return untracked(() => this.selectedNote().content);
+  });
 
   mode = signal<NotebookMode>("write");
 
@@ -74,7 +87,7 @@ export class DashboardMain implements OnInit, OnDestroy {
     this.mode.set(nextMode);
   }
 
-  onContentChange(content: string | null) {
+  saveContent(content: string) {
     this.noteStore.updateNote({
       ...this.selectedNote()!,
       content: content ?? "",
@@ -135,6 +148,10 @@ export class DashboardMain implements OnInit, OnDestroy {
       this.shortcutService.register(["PageDown", "ArrowRight"], () =>
         this.nextPage(),
       ),
+      this.shortcutService.register([{ key: "s", ctrl: true }], (event) => {
+        event.preventDefault();
+        this.saveContent(this.writerRef()?.nativeElement?.innerText || "");
+      }),
     );
   }
 
