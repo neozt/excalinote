@@ -10,19 +10,20 @@ import { NoteStore } from "@features/dashboard/services/note.store";
 import { NgxResizeObserverDirective } from "ngx-resize-observer";
 import { NgStyle } from "@angular/common";
 import { PageIndicator } from "@features/dashboard/components/page-indicator/page-indicator";
-import { filter, fromEvent } from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ShortcutService } from "@core/shortcut.service";
 
 type NotebookMode = "read" | "write";
 
 @Component({
   selector: "app-dashboard-main",
   imports: [NgxResizeObserverDirective, NgStyle, PageIndicator],
+  providers: [ShortcutService],
   templateUrl: "./dashboard-main.component.html",
   styleUrl: "./dashboard-main.component.css",
 })
 export class DashboardMain implements OnInit {
   noteStore = inject(NoteStore);
+  shortcutService = inject(ShortcutService);
 
   selectedNote = this.noteStore.selectedNote;
 
@@ -53,29 +54,15 @@ export class DashboardMain implements OnInit {
   }
 
   private initShortcutListeners() {
-    const keyPress$ = fromEvent<KeyboardEvent>(window, "keydown").pipe(
-      filter(() => this.mode() === "read"),
-    );
+    this.shortcutService.registerShortcut({
+      keys: ["PageUp", "ArrowLeft"],
+      action: () => this.previousPage(),
+    });
 
-    keyPress$
-      .pipe(
-        filter((event) => event.key === "PageUp" || event.key === "ArrowLeft"),
-        takeUntilDestroyed(),
-      )
-      .subscribe(() => {
-        this.previousPage();
-      });
-
-    keyPress$
-      .pipe(
-        filter(
-          (event) => event.key === "PageDown" || event.key === "ArrowRight",
-        ),
-        takeUntilDestroyed(),
-      )
-      .subscribe(() => {
-        this.nextPage();
-      });
+    this.shortcutService.registerShortcut({
+      keys: ["PageDown", "ArrowRight"],
+      action: () => this.nextPage(),
+    });
   }
 
   ngOnInit() {
